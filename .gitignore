@@ -1,0 +1,42 @@
+# Data files (too large for git)
+data/processed/
+data/raw/
+*.npy
+
+# Model files
+src/models/*.keras
+src/models/*.h5
+*.keras
+*.h5
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and results (optional - uncomment to exclude)
+# results/
+# *.log
+
+# TensorBoard logs
+results/logs/
