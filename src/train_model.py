@@ -25,7 +25,7 @@ from keras.callbacks import (
     ModelCheckpoint, EarlyStopping, ReduceLROnPlateau,
     TensorBoard, CSVLogger
 )
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 from datetime import datetime
 import logging
