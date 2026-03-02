@@ -5,6 +5,7 @@ This module implements the complete training pipeline for the brain tumor
 classification CNN, including data augmentation, callbacks, and model checkpointing.
 
 Features:
+    - NVIDIA GPU auto-detection and configuration
     - Data augmentation for improved generalization
     - Learning rate scheduling with ReduceLROnPlateau
     - Early stopping to prevent overfitting
@@ -40,6 +41,37 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# GPU CONFIGURATION
+# ============================================================================
+
+def configure_gpu():
+    """
+    Configure NVIDIA GPU for training.
+
+    Enables memory growth to prevent TensorFlow from allocating all GPU
+    memory at once, which avoids out-of-memory errors on laptops.
+    Falls back to CPU gracefully if no GPU is available.
+
+    Returns:
+        str: Device string to use for training ('/GPU:0' or '/CPU:0')
+    """
+    gpus = tf.config.list_physical_devices('GPU')
+    if gpus:
+        try:
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            logger.info(f"NVIDIA GPU detected: {len(gpus)} device(s)")
+            for i, gpu in enumerate(gpus):
+                details = tf.config.experimental.get_device_details(gpu)
+                logger.info(f"  GPU {i}: {details.get('device_name', gpu.name)}")
+            return '/GPU:0'
+        except RuntimeError as e:
+            logger.warning(f"GPU configuration error: {e}")
+    logger.info("No GPU detected — training will run on CPU")
+    return '/CPU:0'
 
 # ============================================================================
 # CONFIGURATION
@@ -334,7 +366,10 @@ def train_model(
 
 def main():
     """Main training execution function."""
-    
+
+    # Configure GPU before any TensorFlow operations
+    device = configure_gpu()
+
     parser = argparse.ArgumentParser(description='Train Brain Tumor Classification Model')
     parser.add_argument('--model', type=str, default='custom', choices=['custom', 'vgg16', 'resnet50'],
                         help='Model architecture to use')
@@ -353,6 +388,7 @@ def main():
     logger.info("Brain Tumor Classification - Training Pipeline")
     logger.info("DRDO Internship Project")
     logger.info("=" * 60)
+    logger.info(f"Training device: {device}")
     logger.info(f"Model Architecture: {args.model}")
     logger.info(f"Epochs: {config.EPOCHS}")
     logger.info(f"Batch Size: {config.BATCH_SIZE}")

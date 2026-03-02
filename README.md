@@ -53,7 +53,30 @@ brain-tumor-classification/
 
 - Python 3.11
 - pip package manager
-- GPU with CUDA support (recommended)
+- NVIDIA GPU with CUDA support (recommended for faster training)
+
+### NVIDIA GPU Setup
+
+To use your NVIDIA GPU for training, you need the CUDA toolkit and cuDNN installed.
+
+1. **Verify your GPU driver** — open a terminal and run:
+   ```bash
+   nvidia-smi
+   ```
+   This shows your GPU model, driver version, and CUDA version.
+
+2. **Install CUDA Toolkit** — download from [developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads).  
+   TensorFlow 2.15 requires **CUDA 11.8** or **CUDA 12.x**.
+
+3. **Install cuDNN** — download from [developer.nvidia.com/cudnn](https://developer.nvidia.com/cudnn) and follow the installation guide for your OS.
+
+4. **Verify CUDA is visible to TensorFlow** after installing dependencies:
+   ```bash
+   python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+   ```
+   You should see your GPU listed (e.g. `[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`).
+
+> **Tip:** The training script automatically enables GPU memory growth, which prevents TensorFlow from allocating all VRAM at once — important for laptops with shared memory.
 
 ### Installation
 
@@ -73,6 +96,30 @@ brain-tumor-classification/
    ```bash
    pip install -r requirements.txt
    ```
+
+---
+
+## 🚀 Start Training (Quick Start)
+
+After installing dependencies and placing the dataset (see **Dataset** section for layout), run these three commands:
+
+```bash
+# Step 1 — Preprocess the raw MRI images into numpy arrays
+cd src
+python preprocess_data.py
+
+# Step 2 — Train the model (uses your NVIDIA GPU automatically if available)
+python train_model.py --model custom --epochs 50 --batch-size 32
+
+# Step 3 — Evaluate results
+python evaluate.py --model models/brain_tumor_custom_cnn_best.keras
+```
+
+The training script will print which device is being used:
+```
+Training device: /GPU:0    ← NVIDIA GPU found
+Training device: /CPU:0    ← fallback (no GPU / CUDA not installed)
+```
 
 ---
 
